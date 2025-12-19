@@ -2,9 +2,9 @@ pipeline {
     agent any
     
     environment {
-        DOCKER_IMAGE = 'pawtrait-app'
+        DOCKER_IMAGE = 'pioaprilio/pawtrait-app'
         DOCKER_TAG = "${BUILD_NUMBER}"
-        DOCKER_REGISTRY = 'pioaprilio/pawtrait-app' // Ganti dengan registry Anda
+        DOCKER_REGISTRY = 'docker.io'
     }
     
     stages {
