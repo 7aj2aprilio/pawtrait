@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'pawtrait-app'
         DOCKER_TAG = "${BUILD_NUMBER}"
-        DOCKER_REGISTRY = 'your-registry.com' // Ganti dengan registry Anda
+        DOCKER_REGISTRY = 'pioaprilio/pawtrait-app' // Ganti dengan registry Anda
     }
     
     stages {
