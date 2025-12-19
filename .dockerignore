@@ -1,0 +1,43 @@
+# Docker ignore file - exclude unnecessary files from Docker build
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Documentation
+README.md
+docs/
+
+# Development files
+test_*.php
+*.log
+
+# Environment (handled separately)
+.env
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jenkins
+Jenkinsfile
+
+# Docker
+docker-compose*.yml
+Dockerfile
+.dockerignore
+
+# Uploads (mounted as volume)
+uploads/*
+!uploads/.gitkeep
+
+# Logs (mounted as volume)
+logs/*
+!logs/.gitkeep
