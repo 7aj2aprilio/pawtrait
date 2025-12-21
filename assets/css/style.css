@@ -1,29 +1,33 @@
 /* ===== CSS Variables & Design System ===== */
 :root {
-    /* Colors */
-    --primary: #6366f1;
-    --primary-dark: #4f46e5;
-    --primary-light: #818cf8;
-    --secondary: #ec4899;
-    --secondary-dark: #db2777;
-    --accent: #14b8a6;
-    --success: #10b981;
-    --warning: #f59e0b;
-    --error: #ef4444;
+    /* Colors - Derived from Pawtrait Logo */
+    --primary: #3498DB;
+    /* Blue */
+    --primary-dark: #2980B9;
+    --primary-light: #5DADE2;
+    --secondary: #E91E63;
+    /* Pink */
+    --secondary-dark: #C2185B;
+    --accent: #E74C3C;
+    /* Red */
+    --success: #2ecc71;
+    --warning: #f1c40f;
+    --error: #e74c3c;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    --gradient-secondary: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-    --gradient-accent: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-    --gradient-dark: linear-gradient(135deg, #1e1e2e 0%, #2d2d44 100%);
+    /* Gradients (Now Solid Colors) */
+    --gradient-primary: var(--primary);
+    --gradient-secondary: var(--secondary);
+    --gradient-accent: var(--accent);
+    --gradient-dark: #fbfdff;
 
-    /* Dark Theme */
-    --bg-primary: #0f0f1e;
-    --bg-secondary: #1a1a2e;
-    --bg-tertiary: #252538;
-    --text-primary: #ffffff;
-    --text-secondary: #b4b4c8;
-    --text-muted: #6b6b7f;
+    /* Light Theme (Matching Logo Background) */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #e9ecef;
+    --text-primary: #2c3e50;
+    --text-secondary: #5f6c7b;
+    --text-muted: #95a5a6;
 
     /* Spacing */
     --spacing-xs: 0.5rem;
@@ -88,21 +92,19 @@ img {
 }
 
 .gradient-text {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--primary);
 }
 
 /* ===== Navigation ===== */
 .navbar {
-    background: rgba(26, 26, 46, 0.8);
+    background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(10px);
     padding: var(--spacing-sm) 0;
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    box-shadow: var(--shadow-sm);
 }
 
 .navbar .container {
@@ -119,14 +121,9 @@ img {
     font-weight: 700;
 }
 
-.logo-icon {
-    font-size: 2rem;
-}
-
-.logo-text {
-    background: var(--gradient-primary);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
+.logo-image {
+    max-height: 50px;
+    width: auto;
 }
 
 .nav-menu {
@@ -173,9 +170,9 @@ img {
 }
 
 .btn-secondary {
-    background: rgba(255, 255, 255, 0.1);
-    color: white;
-    border: 2px solid rgba(255, 255, 255, 0.2);
+    background: white;
+    color: var(--primary);
+    border: 2px solid var(--primary);
 }
 
 .btn-secondary:hover {
@@ -221,15 +218,7 @@ img {
     opacity: 0.5;
 }
 
-.hero-background::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background:
-        radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.3) 0%, transparent 50%);
-    animation: pulse 8s ease-in-out infinite;
-}
+/* content: none; - Removed radial gradient */
 
 @keyframes pulse {
 
@@ -340,10 +329,10 @@ img {
 }
 
 .feature-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: #ffffff;
     padding: var(--spacing-lg);
     border-radius: var(--radius-lg);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     transition: var(--transition-normal);
     text-align: center;
 }
@@ -383,9 +372,9 @@ img {
 }
 
 .package-card {
-    background: rgba(255, 255, 255, 0.05);
+    background: #ffffff;
     border-radius: var(--radius-lg);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     overflow: hidden;
     transition: var(--transition-normal);
     display: flex;
@@ -441,7 +430,7 @@ img {
 
 .package-features li {
     padding: 0.5rem 0;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
     color: var(--text-secondary);
 }
 
@@ -476,7 +465,7 @@ img {
 .footer {
     background: var(--bg-secondary);
     padding: var(--spacing-xl) 0 var(--spacing-md);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .footer-content {
@@ -507,7 +496,7 @@ img {
 .footer-bottom {
     text-align: center;
     padding-top: var(--spacing-md);
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(0, 0, 0, 0.05);
     color: var(--text-muted);
 }
 
@@ -516,9 +505,9 @@ img {
     max-width: 500px;
     margin: var(--spacing-xl) auto;
     padding: var(--spacing-xl);
-    background: rgba(255, 255, 255, 0.05);
+    background: #ffffff;
     border-radius: var(--radius-lg);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .form-group {
@@ -535,8 +524,8 @@ img {
 .form-control {
     width: 100%;
     padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
     border-radius: var(--radius-sm);
     color: var(--text-primary);
     font-size: 1rem;
@@ -546,8 +535,8 @@ img {
 .form-control:focus {
     outline: none;
     border-color: var(--primary);
-    background: rgba(255, 255, 255, 0.08);
-    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    background: #ffffff;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
 }
 
 .alert {

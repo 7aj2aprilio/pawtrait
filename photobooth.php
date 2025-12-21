@@ -15,8 +15,8 @@ $photoCheck = canTakePhoto($pdo, $_SESSION['user_id']);
 ?>
 
 <main>
-    <section class="photobooth-section">
-        <div class="container">
+    <section class="photobooth-section maximized">
+        <div class="container-fluid">
             <h1 class="section-title">Photo Booth</h1>
             <p class="section-subtitle">Capture your amazing moments with our professional photobooth</p>
             
@@ -45,40 +45,6 @@ $photoCheck = canTakePhoto($pdo, $_SESSION['user_id']);
             <?php endif; ?>
             
             <div class="photobooth-container">
-                <div class="camera-section">
-                    <div class="camera-wrapper">
-                        <video id="camera-stream" autoplay playsinline></video>
-                        <canvas id="camera-canvas" style="display: none;"></canvas>
-                        <div id="camera-overlay" class="camera-overlay">
-                            <div class="camera-frame"></div>
-                        </div>
-                    </div>
-                    
-                    <div class="camera-controls">
-                        <button id="start-camera" class="btn-primary">
-                            <span>📷</span> Start Camera
-                        </button>
-                        <button id="capture-photo" class="btn-secondary" style="display: none;">
-                            <span>📸</span> Capture Photo
-                        </button>
-                        <button id="stop-camera" class="btn-logout" style="display: none;">
-                            <span>⏹️</span> Stop Camera
-                        </button>
-                    </div>
-                    
-                    <div class="filter-controls" id="filter-controls" style="display: none;">
-                        <h3>Apply Filters</h3>
-                        <div class="filter-buttons">
-                            <button class="filter-btn active" data-filter="none">None</button>
-                            <button class="filter-btn" data-filter="grayscale">B&W</button>
-                            <button class="filter-btn" data-filter="sepia">Sepia</button>
-                            <button class="filter-btn" data-filter="blur">Blur</button>
-                            <button class="filter-btn" data-filter="brightness">Bright</button>
-                            <button class="filter-btn" data-filter="contrast">Contrast</button>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Frame Editor Section -->
                 <div class="frame-section">
                     <h3>📸 Frame Editor</h3>
@@ -135,6 +101,42 @@ $photoCheck = canTakePhoto($pdo, $_SESSION['user_id']);
                     
                     <canvas id="frame-canvas" style="display: none;"></canvas>
                 </div>
+
+                <div class="camera-section">
+                    <div class="camera-wrapper">
+                        <video id="camera-stream" autoplay playsinline></video>
+                        <canvas id="camera-canvas" style="display: none;"></canvas>
+                        <div id="camera-overlay" class="camera-overlay">
+                            <div class="camera-frame"></div>
+                            <div id="countdown-overlay" class="countdown-overlay" style="display: none;">5</div>
+                        </div>
+                    </div>
+                    <div id="flash-overlay" class="flash-overlay"></div>
+                    
+                    <div class="camera-controls">
+                        <button id="start-camera" class="btn-primary">
+                            <span>📷</span> Start Camera
+                        </button>
+                        <button id="capture-photo" class="btn-secondary" style="display: none;">
+                            <span>📸</span> Capture Photo
+                        </button>
+                        <button id="stop-camera" class="btn-logout" style="display: none;">
+                            <span>⏹️</span> Stop Camera
+                        </button>
+                    </div>
+                    
+                    <div class="filter-controls" id="filter-controls" style="display: none;">
+                        <h3>Apply Filters</h3>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="none">None</button>
+                            <button class="filter-btn" data-filter="grayscale">B&W</button>
+                            <button class="filter-btn" data-filter="sepia">Sepia</button>
+                            <button class="filter-btn" data-filter="blur">Blur</button>
+                            <button class="filter-btn" data-filter="brightness">Bright</button>
+                            <button class="filter-btn" data-filter="contrast">Contrast</button>
+                        </div>
+                    </div>
+                </div>
                 
                 <div class="gallery-section">
                     <h3>Captured Photos</h3>
@@ -149,36 +151,16 @@ $photoCheck = canTakePhoto($pdo, $_SESSION['user_id']);
 </main>
 
 <style>
-/* Subscription Banner Styles */
-.subscription-banner {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: var(--spacing-md) var(--spacing-lg);
-    border-radius: var(--radius-md);
-    margin-bottom: var(--spacing-lg);
-}
-.subscription-banner.trial { background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.3); }
-.subscription-banner.paid { background: linear-gradient(135deg, var(--primary), var(--secondary)); }
-.banner-info { display: flex; align-items: center; gap: var(--spacing-md); flex-wrap: wrap; }
-.banner-package { font-weight: 600; font-size: 1.1rem; }
-.banner-quota, .banner-expires { font-size: 0.9rem; opacity: 0.9; }
-.btn-upgrade { background: #ffd700; color: #000; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; transition: all 0.2s; }
-.btn-upgrade:hover { background: #ffed4a; transform: scale(1.05); }
-.btn-upload-frame { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 0.5rem 1rem; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; }
-.btn-upload-frame:hover { background: rgba(255,255,255,0.3); }
-.limit-reached-alert { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); padding: var(--spacing-md); border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg); }
-.custom-badge { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); background: var(--primary); font-size: 0.6rem; padding: 0.1rem 0.3rem; border-radius: 2px; }
-.frame-option { position: relative; }
-.frame-upload-hint { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: var(--spacing-sm); }
-
-.photobooth-section { padding: var(--spacing-xl) 0; min-height: 80vh; }
-.photobooth-container { display: grid; grid-template-columns: 1fr 300px 1fr; gap: var(--spacing-lg); margin-top: var(--spacing-xl); }
+.photobooth-section.maximized .container-fluid { max-width: 1600px; margin: 0 auto; padding: 0 var(--spacing-md); }
+.photobooth-container { display: grid; grid-template-columns: 280px 1fr 300px; gap: var(--spacing-lg); margin-top: var(--spacing-xl); align-items: start; }
 .camera-section, .frame-section, .gallery-section { background: rgba(255,255,255,0.05); padding: var(--spacing-lg); border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,0.1); }
 .camera-wrapper { position: relative; width: 100%; aspect-ratio: 4/3; background: #000; border-radius: var(--radius-md); overflow: hidden; margin-bottom: var(--spacing-md); }
 #camera-stream { width: 100%; height: 100%; object-fit: cover; }
 .camera-overlay { position: absolute; inset: 0; pointer-events: none; }
 .camera-frame { position: absolute; inset: 10%; border: 3px solid rgba(255,255,255,0.5); border-radius: var(--radius-md); }
+.countdown-overlay { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 8rem; font-weight: 800; color: white; text-shadow: 0 0 20px rgba(0,0,0,0.5); z-index: 10; font-family: 'Inter', sans-serif; pointer-events: none; }
+.flash-overlay { position: fixed; inset: 0; background: white; opacity: 0; pointer-events: none; z-index: 9999; transition: opacity 0.1s ease-out; }
+.flash-overlay.active { opacity: 1; transition: none; }
 .camera-controls { display: flex; gap: var(--spacing-sm); margin-bottom: var(--spacing-md); }
 .camera-controls button { flex: 1; }
 .filter-controls { margin-top: var(--spacing-md); }
