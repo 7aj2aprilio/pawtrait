@@ -69,7 +69,7 @@ $midtrans_params = [
 
 // Call Midtrans Snap API
 $ch = curl_init();
-curl_setopt($ch, CURLOPT_URL, MIDTRANS_API_URL . '/snap/transactions');
+curl_setopt($ch, CURLOPT_URL, MIDTRANS_API_URL . '/transactions');
 curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 curl_setopt($ch, CURLOPT_POST, 1);
 curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($midtrans_params));
