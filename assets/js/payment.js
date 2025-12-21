@@ -25,20 +25,26 @@ if (payButton) {
             if (result.success && result.snap_token) {
                 // Open Midtrans Snap popup
                 window.snap.pay(result.snap_token, {
-                    onSuccess: function (result) {
+                    onSuccess: async function (result) {
                         console.log('Payment success:', result);
+                        // Force update status on localhost
+                        await fetch('api/update-status.php');
                         window.location.href = 'payment-success.php?order_id=' + result.order_id;
                     },
-                    onPending: function (result) {
+                    onPending: async function (result) {
                         console.log('Payment pending:', result);
+                        // Force update status on localhost
+                        await fetch('api/update-status.php');
                         window.location.href = 'payment-pending.php?order_id=' + result.order_id;
                     },
                     onError: function (result) {
                         console.log('Payment error:', result);
                         window.location.href = 'payment-failed.php';
                     },
-                    onClose: function () {
+                    onClose: async function () {
                         console.log('Payment popup closed');
+                        // Also check on close just in case
+                        await fetch('api/update-status.php');
                         payButton.disabled = false;
                         payButton.innerHTML = 'Pay with Midtrans';
                     }

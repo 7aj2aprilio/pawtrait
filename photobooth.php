@@ -5,7 +5,13 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+require_once 'config/subscription.php';
 require_once 'includes/header.php';
+
+// Get subscription info
+$subscriptionStatus = getSubscriptionStatus($pdo, $_SESSION['user_id']);
+$framesData = getAccessibleFrames($pdo, $_SESSION['user_id']);
+$photoCheck = canTakePhoto($pdo, $_SESSION['user_id']);
 ?>
 
 <main>
@@ -13,6 +19,30 @@ require_once 'includes/header.php';
         <div class="container">
             <h1 class="section-title">Photo Booth</h1>
             <p class="section-subtitle">Capture your amazing moments with our professional photobooth</p>
+            
+            <!-- Subscription Status Banner -->
+            <div class="subscription-banner <?= $subscriptionStatus['is_trial'] ? 'trial' : 'paid' ?>">
+                <div class="banner-info">
+                    <span class="banner-package"><?= htmlspecialchars($subscriptionStatus['package_name']) ?></span>
+                    <?php if ($subscriptionStatus['is_trial']): ?>
+                        <span class="banner-quota">📸 <?= $subscriptionStatus['photo_remaining'] ?>/<?= $subscriptionStatus['photo_max'] ?> foto tersisa</span>
+                    <?php elseif (isset($subscriptionStatus['expires_in'])): ?>
+                        <span class="banner-expires">⏱️ Berlaku <?= $subscriptionStatus['expires_in'] ?></span>
+                    <?php endif; ?>
+                </div>
+                <?php if ($subscriptionStatus['is_trial'] && $subscriptionStatus['photo_remaining'] <= 3): ?>
+                    <a href="packages.php" class="btn-upgrade">Upgrade Paket</a>
+                <?php elseif ($subscriptionStatus['can_upload_frames']): ?>
+                    <button id="upload-frame-btn" class="btn-upload-frame">📤 Upload Frame</button>
+                <?php endif; ?>
+            </div>
+            
+            <?php if (!$photoCheck['can_take']): ?>
+            <div class="limit-reached-alert">
+                <span>⚠️ <?= htmlspecialchars($photoCheck['message']) ?></span>
+                <a href="packages.php" class="btn-primary">Beli Paket</a>
+            </div>
+            <?php endif; ?>
             
             <div class="photobooth-container">
                 <div class="camera-section">
@@ -73,29 +103,24 @@ require_once 'includes/header.php';
                             </div>
                         </div>
 
-                        <!-- Frame Selector -->
+                        <!-- Frame Selector (Dynamic based on subscription) -->
                         <div class="frame-selector-container">
-                            <h4>Choose Frame</h4>
-                            <div class="frame-selector">
-                                <div class="frame-option active" data-src="assets/images/frames/default-frame.png">
-                                    <img src="assets/images/frames/default-frame.png" alt="Default">
+                            <h4>Pilih Frame (<?= count($framesData['frames']) ?>/<?= $framesData['max_frames'] ?>)</h4>
+                            <div class="frame-selector" id="frame-selector">
+                                <?php foreach ($framesData['frames'] as $index => $frame): ?>
+                                <div class="frame-option <?= $index === 0 ? 'active' : '' ?>" 
+                                     data-src="<?= htmlspecialchars($frame['path']) ?>"
+                                     <?= isset($frame['is_custom']) ? 'data-custom="true"' : '' ?>>
+                                    <img src="<?= htmlspecialchars($frame['path']) ?>" alt="<?= htmlspecialchars($frame['filename']) ?>">
+                                    <?php if (isset($frame['is_custom'])): ?>
+                                    <span class="custom-badge">Custom</span>
+                                    <?php endif; ?>
                                 </div>
-                                <div class="frame-option" data-src="assets/images/frames/frame-1.png">
-                                    <img src="assets/images/frames/frame-1.png" alt="Frame 1">
-                                </div>
-                                <div class="frame-option" data-src="assets/images/frames/frame-2.png">
-                                    <img src="assets/images/frames/frame-2.png" alt="Frame 2">
-                                </div>
-                                <div class="frame-option" data-src="assets/images/frames/frame-3.png">
-                                    <img src="assets/images/frames/frame-3.png" alt="Frame 3">
-                                </div>
-                                <div class="frame-option" data-src="assets/images/frames/frame-4.png">
-                                    <img src="assets/images/frames/frame-4.png" alt="Frame 4">
-                                </div>
-                                <div class="frame-option" data-src="assets/images/frames/frame-5.png">
-                                    <img src="assets/images/frames/frame-5.png" alt="Frame 5">
-                                </div>
+                                <?php endforeach; ?>
                             </div>
+                            <?php if ($framesData['can_upload'] && $framesData['current_count'] < $framesData['max_frames']): ?>
+                            <p class="frame-upload-hint">💡 Kamu bisa upload <?= $framesData['max_frames'] - $framesData['current_count'] ?> frame lagi</p>
+                            <?php endif; ?>
                         </div>
                         
                         <div class="frame-actions">
@@ -124,6 +149,29 @@ require_once 'includes/header.php';
 </main>
 
 <style>
+/* Subscription Banner Styles */
+.subscription-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-lg);
+}
+.subscription-banner.trial { background: rgba(255,255,255,0.1); border: 1px dashed rgba(255,255,255,0.3); }
+.subscription-banner.paid { background: linear-gradient(135deg, var(--primary), var(--secondary)); }
+.banner-info { display: flex; align-items: center; gap: var(--spacing-md); flex-wrap: wrap; }
+.banner-package { font-weight: 600; font-size: 1.1rem; }
+.banner-quota, .banner-expires { font-size: 0.9rem; opacity: 0.9; }
+.btn-upgrade { background: #ffd700; color: #000; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-weight: 600; text-decoration: none; transition: all 0.2s; }
+.btn-upgrade:hover { background: #ffed4a; transform: scale(1.05); }
+.btn-upload-frame { background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.4); color: white; padding: 0.5rem 1rem; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.2s; }
+.btn-upload-frame:hover { background: rgba(255,255,255,0.3); }
+.limit-reached-alert { background: rgba(239, 68, 68, 0.2); border: 1px solid rgba(239, 68, 68, 0.5); padding: var(--spacing-md); border-radius: var(--radius-md); display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--spacing-lg); }
+.custom-badge { position: absolute; bottom: 2px; left: 50%; transform: translateX(-50%); background: var(--primary); font-size: 0.6rem; padding: 0.1rem 0.3rem; border-radius: 2px; }
+.frame-option { position: relative; }
+.frame-upload-hint { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: var(--spacing-sm); }
+
 .photobooth-section { padding: var(--spacing-xl) 0; min-height: 80vh; }
 .photobooth-container { display: grid; grid-template-columns: 1fr 300px 1fr; gap: var(--spacing-lg); margin-top: var(--spacing-xl); }
 .camera-section, .frame-section, .gallery-section { background: rgba(255,255,255,0.05); padding: var(--spacing-lg); border-radius: var(--radius-lg); border: 1px solid rgba(255,255,255,0.1); }

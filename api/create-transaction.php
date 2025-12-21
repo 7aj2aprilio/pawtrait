@@ -43,17 +43,24 @@ $transaction_details = [
 
 $item_details = [];
 foreach ($items as $item) {
+    // Generate valid ID for Midtrans (max 50 chars, no spaces)
+    $itemId = isset($item['id']) ? substr(preg_replace('/[^a-zA-Z0-9-]/', '', $item['id']), 0, 50) : 'ITEM-001';
+    
     $item_details[] = [
-        'id' => $item['id'],
+        'id' => $itemId, // Midtrans requires ID
         'price' => (int)$item['price'],
         'quantity' => (int)$item['quantity'],
-        'name' => $item['name']
+        'name' => substr($item['name'], 0, 50) // Limit name length
     ];
 }
 
+$customer_email = filter_var($customer['email'], FILTER_VALIDATE_EMAIL) 
+    ? $customer['email'] 
+    : 'user' . $user_id . '@pawtrait.com'; // Fallback for invalid emails (e.g. admin accounts)
+
 $customer_details = [
     'first_name' => $customer['name'],
-    'email' => $customer['email'],
+    'email' => $customer_email,
     'phone' => $customer['phone']
 ];
 
@@ -108,6 +115,9 @@ if ($http_code == 201 && isset($result['token'])) {
         $customer['phone']
     ]);
     
+    // Log success
+    error_log("Midtrans Transaction Created: $order_id");
+    
     echo json_encode([
         'success' => true,
         'snap_token' => $snap_token,
@@ -117,16 +127,18 @@ if ($http_code == 201 && isset($result['token'])) {
     // Log detailed error information
     error_log("Midtrans API Error - HTTP Code: $http_code");
     error_log("Midtrans API Response: $response");
+    error_log("Midtrans API Request: " . json_encode($midtrans_params));
     
     echo json_encode([
         'success' => false,
         'message' => 'Failed to create Midtrans transaction',
         'http_code' => $http_code,
         'error' => $result,
-        'raw_response' => $response,
+        'error' => $result,
+        'raw_response' => $response, // Temporarily expose raw response for debugging
         'debug_info' => [
-            'api_url' => MIDTRANS_API_URL . '/snap/transactions',
-            'server_key_prefix' => substr(MIDTRANS_SERVER_KEY, 0, 15) . '...'
+            'api_url' => MIDTRANS_API_URL . '/transactions',
+            'server_key_prefix' => substr(MIDTRANS_SERVER_KEY, 0, 5) . '...'
         ]
     ]);
 }

@@ -42,7 +42,9 @@ define('MIDTRANS_3DS', filter_var(getenv('MIDTRANS_IS_3DS'), FILTER_VALIDATE_BOO
 if (MIDTRANS_IS_PRODUCTION) {
     define('MIDTRANS_API_URL', 'https://app.midtrans.com/snap/v1');
     define('MIDTRANS_SNAP_URL', 'https://app.midtrans.com/snap/snap.js');
+    define('MIDTRANS_CORE_API_URL', 'https://api.midtrans.com/v2');
 } else {
     define('MIDTRANS_API_URL', 'https://app.sandbox.midtrans.com/snap/v1');
     define('MIDTRANS_SNAP_URL', 'https://app.sandbox.midtrans.com/snap/snap.js');
+    define('MIDTRANS_CORE_API_URL', 'https://api.sandbox.midtrans.com/v2');
 }
