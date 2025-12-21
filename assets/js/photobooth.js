@@ -14,6 +14,8 @@ const filterControls = document.getElementById('filter-controls');
 const photoGallery = document.getElementById('photo-gallery');
 const frameCanvas = document.getElementById('frame-canvas');
 const frameImage = document.getElementById('frame-image');
+const countdownOverlay = document.getElementById('countdown-overlay');
+const flashOverlay = document.getElementById('flash-overlay');
 
 // Filter definitions
 const filters = {
@@ -74,8 +76,28 @@ document.querySelectorAll('.filter-btn').forEach(btn => {
     });
 });
 
-// Capture photo
+// Capture photo with countdown
 captureBtnBtn.addEventListener('click', () => {
+    // Start countdown
+    let timeLeft = 5;
+    countdownOverlay.textContent = timeLeft;
+    countdownOverlay.style.display = 'flex';
+    captureBtnBtn.disabled = true;
+
+    const countdownInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft > 0) {
+            countdownOverlay.textContent = timeLeft;
+        } else {
+            clearInterval(countdownInterval);
+            countdownOverlay.style.display = 'none';
+            performCapture();
+        }
+    }, 1000);
+});
+
+// Actual capture logic
+async function performCapture() {
     // Set canvas size to match video
     canvasElement.width = videoElement.videoWidth;
     canvasElement.height = videoElement.videoHeight;
@@ -88,7 +110,7 @@ captureBtnBtn.addEventListener('click', () => {
     // Draw video frame to canvas
     ctx.drawImage(videoElement, 0, 0, canvasElement.width, canvasElement.height);
 
-    // Show capture animation immediately for feedback
+    // Show flash animation
     showCaptureAnimation();
 
     // Disable button and show loading state
@@ -121,7 +143,7 @@ captureBtnBtn.addEventListener('click', () => {
             alert('Failed to save photo. Please try again.');
         }
     }, 'image/jpeg', 0.95);
-});
+}
 
 // Display photo in gallery
 function displayPhoto(photoData) {
@@ -196,26 +218,28 @@ async function deletePhoto(photoId) {
         const result = await response.json();
 
         if (result.success) {
-            const index = capturedPhotos.findIndex(p => p.id === photoId);
+            const index = capturedPhotos.findIndex(p => p.id == photoId);
             if (index > -1) {
                 // Revoke object URL to free memory
-                if (capturedPhotos[index].url.startsWith('blob:')) {
+                if (capturedPhotos[index].url && capturedPhotos[index].url.startsWith('blob:')) {
                     URL.revokeObjectURL(capturedPhotos[index].url);
                 }
                 capturedPhotos.splice(index, 1);
 
                 // Remove from DOM
-                photoGallery.innerHTML = '';
+                const photoItem = photoGallery.querySelector(`[data-photo-id="${photoId}"]`);
+                if (photoItem) {
+                    photoItem.remove();
+                }
+
                 if (capturedPhotos.length === 0) {
                     photoGallery.innerHTML = '<p class="empty-gallery">No photos captured yet. Start your camera to begin!</p>';
-                } else {
-                    [...capturedPhotos].reverse().forEach(photo => displayPhoto(photo));
                 }
             }
 
             // Also remove from frame if it was used
             framePhotos.forEach((photo, idx) => {
-                if (photo && photo.id === photoId) {
+                if (photo && photo.id == photoId) {
                     framePhotos[idx] = null;
                     updateSlotDisplay(idx);
                 }
@@ -229,13 +253,12 @@ async function deletePhoto(photoId) {
     }
 }
 
-// Capture animation
+// Capture animation with full screen flash
 function showCaptureAnimation() {
-    const overlay = document.querySelector('.camera-overlay');
-    overlay.style.background = 'rgba(255, 255, 255, 0.8)';
+    flashOverlay.classList.add('active');
     setTimeout(() => {
-        overlay.style.background = '';
-    }, 150);
+        flashOverlay.classList.remove('active');
+    }, 100);
 }
 
 // ==================== FRAME FUNCTIONS ====================
