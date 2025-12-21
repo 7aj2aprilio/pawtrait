@@ -1,25 +1,28 @@
 <?php
-// Azure MySQL Configuration (FIXED)
 
-define('DB_HOST', getenv('DB_HOST') ?: 'pawtrait-photobooth-server.mysql.database.azure.com');
-define('DB_PORT', getenv('DB_PORT') ?: '3306');
-define('DB_NAME', getenv('DB_NAME') ?: 'pawtrait-photobooth-database');
-define('DB_USER', getenv('DB_USER') ?: 'yktjmthsur');
-define('DB_PASS', getenv('DB_PASS') ?: 'sfl5DhAVHCMUwxa$');
+$host = getenv('DB_HOST');
+$db   = getenv('DB_NAME');
+$user = getenv('DB_USER');
+$pass = getenv('DB_PASS');
+$port = getenv('DB_PORT') ?: 3306;
+
+/**
+ * DEBUG SEMENTARA (boleh dihapus nanti)
+ */
+if (!$host) {
+    die("DB_HOST NOT SET");
+}
+
+$dsn = "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4";
 
 try {
-    $dsn = "mysql:host=" . DB_HOST .
-           ";port=" . DB_PORT .
-           ";dbname=" . DB_NAME .
-           ";charset=utf8mb4";
-
-    $pdo = new PDO($dsn, DB_USER, DB_PASS, [
+    $pdo = new PDO($dsn, $user, $pass, [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         PDO::ATTR_EMULATE_PREPARES => false,
 
-        // 🔐 WAJIB untuk Azure MySQL
+        // 🔴 INI YANG WAJIB DI AZURE
         PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
+        PDO::MYSQL_ATTR_SSL_CA => null,
     ]);
 
 } catch (PDOException $e) {
