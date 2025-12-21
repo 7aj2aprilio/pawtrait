@@ -24,8 +24,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <div class="container">
             <div class="nav-brand">
                 <a href="index.php">
-                    <span class="logo-icon">📸</span>
-                    <span class="logo-text">PhotoBooth</span>
+                    <img src="assets/images/logo.jpg" alt="Pawtrait Logo" class="logo-image">
                 </a>
             </div>
             <ul class="nav-menu">
