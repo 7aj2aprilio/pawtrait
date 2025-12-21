@@ -1,6 +1,7 @@
 <?php
 require_once '../config/database.php';
 require_once '../config/midtrans.php';
+require_once '../config/subscription.php';
 
 // Get JSON input from Midtrans
 $input = file_get_contents('php://input');
@@ -60,6 +61,14 @@ if ($transaction_status == 'capture') {
     $new_status = 'pending';
 } else if ($transaction_status == 'deny' || $transaction_status == 'expire' || $transaction_status == 'cancel') {
     $new_status = 'failed';
+}
+
+// Activate subscription if payment successful
+if ($new_status == 'success') {
+    activateSubscription($pdo, $transaction['user_id'], $transaction['package_id']);
+    file_put_contents('../logs/subscription_activation.log', 
+        date('Y-m-d H:i:s') . ' - Activated subscription for user ' . $transaction['user_id'] . 
+        ' package ' . $transaction['package_id'] . "\n", FILE_APPEND);
 }
 
 // Update database

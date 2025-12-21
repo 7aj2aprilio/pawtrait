@@ -1,6 +1,7 @@
 <?php
 session_start();
 require_once '../config/database.php';
+require_once '../config/subscription.php';
 
 header('Content-Type: application/json');
 
@@ -20,6 +21,18 @@ if (!isset($_FILES['photo'])) {
 }
 
 $user_id = $_SESSION['user_id'];
+
+// Check subscription photo limit
+$photoCheck = canTakePhoto($pdo, $user_id);
+if (!$photoCheck['can_take']) {
+    echo json_encode([
+        'success' => false, 
+        'message' => $photoCheck['message'],
+        'show_packages' => $photoCheck['show_packages'] ?? false
+    ]);
+    exit;
+}
+
 $filter = $_POST['filter'] ?? 'none';
 $file = $_FILES['photo'];
 
@@ -56,11 +69,18 @@ if (move_uploaded_file($file['tmp_name'], $file_path)) {
     
     $photo_id = $pdo->lastInsertId();
     
+    // Increment photo count for subscription tracking
+    incrementPhotoCount($pdo, $user_id);
+    
+    // Get updated photo remaining count
+    $updatedCheck = canTakePhoto($pdo, $user_id);
+    
     echo json_encode([
         'success' => true,
         'message' => 'Photo uploaded successfully',
         'photo_id' => $photo_id,
-        'file_path' => 'uploads/photos/' . $filename
+        'file_path' => 'uploads/photos/' . $filename,
+        'photos_remaining' => $updatedCheck['remaining']
     ]);
 } else {
     echo json_encode(['success' => false, 'message' => 'Failed to upload photo']);

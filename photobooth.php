@@ -5,7 +5,13 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+require_once 'config/subscription.php';
 require_once 'includes/header.php';
+
+// Get subscription info
+$subscriptionStatus = getSubscriptionStatus($pdo, $_SESSION['user_id']);
+$framesData = getAccessibleFrames($pdo, $_SESSION['user_id']);
+$photoCheck = canTakePhoto($pdo, $_SESSION['user_id']);
 ?>
 
 <main>
@@ -13,6 +19,30 @@ require_once 'includes/header.php';
         <div class="container-fluid">
             <h1 class="section-title">Photo Booth</h1>
             <p class="section-subtitle">Capture your amazing moments with our professional photobooth</p>
+            
+            <!-- Subscription Status Banner -->
+            <div class="subscription-banner <?= $subscriptionStatus['is_trial'] ? 'trial' : 'paid' ?>">
+                <div class="banner-info">
+                    <span class="banner-package"><?= htmlspecialchars($subscriptionStatus['package_name']) ?></span>
+                    <?php if ($subscriptionStatus['is_trial']): ?>
+                        <span class="banner-quota">📸 <?= $subscriptionStatus['photo_remaining'] ?>/<?= $subscriptionStatus['photo_max'] ?> foto tersisa</span>
+                    <?php elseif (isset($subscriptionStatus['expires_in'])): ?>
+                        <span class="banner-expires">⏱️ Berlaku <?= $subscriptionStatus['expires_in'] ?></span>
+                    <?php endif; ?>
+                </div>
+                <?php if ($subscriptionStatus['is_trial'] && $subscriptionStatus['photo_remaining'] <= 3): ?>
+                    <a href="packages.php" class="btn-upgrade">Upgrade Paket</a>
+                <?php elseif ($subscriptionStatus['can_upload_frames']): ?>
+                    <button id="upload-frame-btn" class="btn-upload-frame">📤 Upload Frame</button>
+                <?php endif; ?>
+            </div>
+            
+            <?php if (!$photoCheck['can_take']): ?>
+            <div class="limit-reached-alert">
+                <span>⚠️ <?= htmlspecialchars($photoCheck['message']) ?></span>
+                <a href="packages.php" class="btn-primary">Beli Paket</a>
+            </div>
+            <?php endif; ?>
             
             <div class="photobooth-container">
                 <!-- Frame Editor Section -->
@@ -39,29 +69,24 @@ require_once 'includes/header.php';
                             </div>
                         </div>
 
-                        <!-- Frame Selector -->
+                        <!-- Frame Selector (Dynamic based on subscription) -->
                         <div class="frame-selector-container">
-                            <h4>Choose Frame</h4>
-                            <div class="frame-selector">
-                                <div class="frame-option active" data-src="assets/images/frames/default-frame.png">
-                                    <img src="assets/images/frames/default-frame.png" alt="Default">
+                            <h4>Pilih Frame (<?= count($framesData['frames']) ?>/<?= $framesData['max_frames'] ?>)</h4>
+                            <div class="frame-selector" id="frame-selector">
+                                <?php foreach ($framesData['frames'] as $index => $frame): ?>
+                                <div class="frame-option <?= $index === 0 ? 'active' : '' ?>" 
+                                     data-src="<?= htmlspecialchars($frame['path']) ?>"
+                                     <?= isset($frame['is_custom']) ? 'data-custom="true"' : '' ?>>
+                                    <img src="<?= htmlspecialchars($frame['path']) ?>" alt="<?= htmlspecialchars($frame['filename']) ?>">
+                                    <?php if (isset($frame['is_custom'])): ?>
+                                    <span class="custom-badge">Custom</span>
+                                    <?php endif; ?>
                                 </div>
-                                <div class="frame-option" data-src="assets/images/frames/frame-1.png">
-                                    <img src="assets/images/frames/frame-1.png" alt="Frame 1">
-                                </div>
-                                <div class="frame-option" data-src="assets/images/frames/frame-2.png">
-                                    <img src="assets/images/frames/frame-2.png" alt="Frame 2">
-                                </div>
-                                <div class="frame-option" data-src="assets/images/frames/frame-3.png">
-                                    <img src="assets/images/frames/frame-3.png" alt="Frame 3">
-                                </div>
-                                <div class="frame-option" data-src="assets/images/frames/frame-4.png">
-                                    <img src="assets/images/frames/frame-4.png" alt="Frame 4">
-                                </div>
-                                <div class="frame-option" data-src="assets/images/frames/frame-5.png">
-                                    <img src="assets/images/frames/frame-5.png" alt="Frame 5">
-                                </div>
+                                <?php endforeach; ?>
                             </div>
+                            <?php if ($framesData['can_upload'] && $framesData['current_count'] < $framesData['max_frames']): ?>
+                            <p class="frame-upload-hint">💡 Kamu bisa upload <?= $framesData['max_frames'] - $framesData['current_count'] ?> frame lagi</p>
+                            <?php endif; ?>
                         </div>
                         
                         <div class="frame-actions">
