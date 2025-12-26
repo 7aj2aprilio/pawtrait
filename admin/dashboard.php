@@ -54,7 +54,8 @@ $recent_transactions = $stmt->fetchAll();
             </div>
             <ul class="nav-menu">
                 <li><a href="dashboard.php" class="active">Dashboard</a></li>
-                <li><a href="packages.php">Packages</a></li>
+                <li><a href="users.php">Users</a></li>
+                <li><a href="analytics.php">Analytics</a></li>
                 <li><a href="transactions.php">Transactions</a></li>
                 <li><a href="logout.php" class="btn-logout">Logout</a></li>
             </ul>
@@ -143,5 +144,137 @@ $recent_transactions = $stmt->fetchAll();
             </div>
         </section>
     </main>
+    
+    <style>
+    .dashboard-section {
+        padding: 2rem 0;
+        min-height: 80vh;
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        margin-bottom: 0.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .section-subtitle {
+        color: rgba(255, 255, 255, 0.7);
+        font-size: 1.1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 1.5rem;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    
+    .stat-icon {
+        font-size: 3rem;
+    }
+    
+    .stat-info h3 {
+        font-size: 2.5rem;
+        margin: 0 0 0.25rem 0;
+        color: white;
+    }
+    
+    .stat-info p {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1rem;
+    }
+    
+    .dashboard-section-block {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+    
+    .dashboard-section-block h2 {
+        margin: 0 0 1.5rem 0;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+        font-size: 1.5rem;
+    }
+    
+    .transactions-table {
+        overflow-x: auto;
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+    
+    .transactions-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .transactions-table th {
+        background: #f8f9fa;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 2px solid #e9ecef;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .transactions-table td {
+        padding: 1rem;
+        color: #333;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .transactions-table tbody tr:hover {
+        background: #f8f9fa;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .status-badge.success {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-badge.pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-badge.failed {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    </style>
 </body>
 </html>

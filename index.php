@@ -107,4 +107,5 @@
     </section>
 </main>
 
+<?php include_once 'includes/visitor-tracker.php'; ?>
 <?php require_once 'includes/footer.php'; ?>

@@ -37,7 +37,8 @@ $transactions = $stmt->fetchAll();
             </div>
             <ul class="nav-menu">
                 <li><a href="dashboard.php">Dashboard</a></li>
-                <li><a href="packages.php">Packages</a></li>
+                <li><a href="users.php">Users</a></li>
+                <li><a href="analytics.php">Analytics</a></li>
                 <li><a href="transactions.php" class="active">Transactions</a></li>
                 <li><a href="logout.php" class="btn-logout">Logout</a></li>
             </ul>
@@ -88,5 +89,90 @@ $transactions = $stmt->fetchAll();
             </div>
         </section>
     </main>
+    
+    <style>
+    .admin-section {
+        padding: 2rem 0;
+        min-height: 80vh;
+    }
+    
+    .section-title {
+        font-size: 2.5rem;
+        margin-bottom: 1.5rem;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    
+    .admin-card {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+    }
+    
+    .transactions-table {
+        overflow-x: auto;
+        background: white;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+    
+    .transactions-table table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .transactions-table th {
+        background: #f8f9fa;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+        border-bottom: 2px solid #e9ecef;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    
+    .transactions-table td {
+        padding: 1rem;
+        color: #333;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .transactions-table tbody tr:hover {
+        background: #f8f9fa;
+        transition: background 0.2s ease;
+    }
+    
+    .transactions-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+    
+    .status-badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+    
+    .status-badge.success {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-badge.pending {
+        background: #fff3cd;
+        color: #856404;
+    }
+    
+    .status-badge.failed {
+        background: #f8d7da;
+        color: #721c24;
+    }
+    </style>
 </body>
 </html>

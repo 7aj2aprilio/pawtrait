@@ -282,4 +282,5 @@ require_once 'includes/header.php';
 }
 </style>
 
+<?php include_once 'includes/visitor-tracker.php'; ?>
 <?php require_once 'includes/footer.php'; ?>

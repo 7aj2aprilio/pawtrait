@@ -104,6 +104,36 @@ require_once 'includes/header.php';
                 </style>
             </div>
             
+            <!-- Admin Login Button -->
+            <div style="text-align: center; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,0.1);">
+                <a href="/admin/login.php" class="btn-admin-login">
+                    <span style="margin-right: 8px;">⚙️</span>
+                    <span>Admin Login</span>
+                </a>
+                
+                <style>
+                    .btn-admin-login {
+                        display: inline-flex;
+                        align-items: center;
+                        justify-content: center;
+                        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        padding: 10px 20px;
+                        text-decoration: none;
+                        font-weight: 600;
+                        transition: all 0.3s ease;
+                        box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+                        font-size: 0.95rem;
+                    }
+                    .btn-admin-login:hover {
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+                    }
+                </style>
+            </div>
+            
             <p class="text-center" style="margin-top: 1.5rem; color: var(--text-secondary);">
                 Don't have an account? <a href="register.php" style="color: var(--primary-light);">Register here</a>
             </p>
