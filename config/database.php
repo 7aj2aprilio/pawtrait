@@ -1,30 +1,25 @@
 <?php
+// Database Configuration
+// Uses environment variables if available (for Docker), otherwise uses local defaults
 
-$host = getenv('DB_HOST');
-$db   = getenv('DB_NAME');
-$user = getenv('DB_USER');
-$pass = getenv('DB_PASS');
-$port = getenv('DB_PORT') ?: 3306;
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: '');
+define('DB_NAME', getenv('DB_NAME') ?: 'photobooth_db');
 
-/**
- * DEBUG SEMENTARA (boleh dihapus nanti)
- */
-if (!$host) {
-    die("DB_HOST NOT SET");
-}
-
-$dsn = "mysql:host={$host};port={$port};dbname={$db};charset=utf8mb4";
-
+// Create PDO connection
 try {
-    $pdo = new PDO($dsn, $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_EMULATE_PREPARES => false,
-
-        // 🔴 INI YANG WAJIB DI AZURE
-        PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => false,
-        PDO::MYSQL_ATTR_SSL_CA => null,
-    ]);
-
+    $pdo = new PDO(
+        "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME . ";charset=utf8mb4",
+        DB_USER,
+        DB_PASS,
+        [
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_EMULATE_PREPARES => false,
+        ]
+    );
 } catch (PDOException $e) {
     die("Database connection failed: " . $e->getMessage());
 }
+
