@@ -1,0 +1,7 @@
+{
+    "name": "pawtrait/app",
+    "description": "Photobooth Application",
+    "require": {
+        "google/apiclient": "^2.15"
+    }
+}
