@@ -79,6 +79,8 @@ $packages = $stmt->fetchAll();
             </div>
             <ul class="nav-menu">
                 <li><a href="dashboard.php">Dashboard</a></li>
+                <li><a href="users.php">Users</a></li>
+                <li><a href="analytics.php">Analytics</a></li>
                 <li><a href="packages.php" class="active">Packages</a></li>
                 <li><a href="transactions.php">Transactions</a></li>
                 <li><a href="logout.php" class="btn-logout">Logout</a></li>

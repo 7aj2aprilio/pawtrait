@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
+    google_id VARCHAR(255) DEFAULT NULL,
     password VARCHAR(255) NOT NULL,
     full_name VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
@@ -121,6 +122,18 @@ CREATE TABLE IF NOT EXISTS transactions (
 INSERT INTO admins (username, email, password, full_name) VALUES
 ('admin', 'admin@photobooth.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Administrator');
 -- Default password: password
+
+-- Visitor Logs Table (for Analytics)
+CREATE TABLE IF NOT EXISTS visitor_logs (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    visit_date DATE NOT NULL,
+    page_views INT DEFAULT 1,
+    unique_visitors INT DEFAULT 1,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_date (visit_date),
+    INDEX idx_visit_date (visit_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Insert Subscription Packages
 INSERT INTO packages (name, description, price, duration_days, max_frames, max_photos, can_upload_frames, is_trial, features, is_active) VALUES
