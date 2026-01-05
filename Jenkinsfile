@@ -45,7 +45,8 @@ pipeline {
                     if (isUnix()) {
                         sh 'find . -name "*.php" -not -path "./vendor/*" | head -20 | xargs -I {} php -l {}'
                     } else {
-                        bat 'for /r %%f in (*.php) do php -l "%%f"'
+                        // Skip folder vendor biar gak error path too long di Windows
+                        bat 'for /f "usebackq tokens=*" %%f in (`dir /s /b *.php ^| findstr /v /i "vendor"`) do php -l "%%f"'
                     }
                 }
             }
