@@ -51,6 +51,19 @@ pipeline {
             }
         }
         
+        stage('Install Dependencies') {
+            steps {
+                echo 'Installing dependencies...'
+                script {
+                    if (isUnix()) {
+                        sh 'composer install --no-dev --prefer-dist'
+                    } else {
+                        bat 'composer install --no-dev --prefer-dist'
+                    }
+                }
+            }
+        }
+        
         stage('Build Docker Image') {
             steps {
                 echo 'Building Docker image...'
