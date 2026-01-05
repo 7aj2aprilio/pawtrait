@@ -17,10 +17,11 @@ services:
       - MIDTRANS_IS_PRODUCTION=${MIDTRANS_IS_PRODUCTION:-false}
       - MIDTRANS_IS_SANITIZED=${MIDTRANS_IS_SANITIZED:-true}
       - MIDTRANS_IS_3DS=${MIDTRANS_IS_3DS:-true}
-      - DB_HOST=db
-      - DB_USER=pawtrait
-      - DB_PASS=pawtrait_secret
-      - DB_NAME=photobooth_db
+      - DB_HOST=${DB_HOST:-db}
+      - DB_USER=${DB_USER:-pawtrait}
+      - DB_PASS=${DB_PASS:-pawtrait_secret}
+      - DB_NAME=${DB_NAME:-photobooth_db}
+      - DB_PORT=${DB_PORT:-3306}
     volumes:
       - ./uploads:/var/www/html/uploads
       - ./logs:/var/www/html/logs

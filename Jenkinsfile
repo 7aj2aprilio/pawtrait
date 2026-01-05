@@ -5,6 +5,8 @@ pipeline {
         DOCKER_IMAGE = 'pioaprilio/pawtrait-app'
         DOCKER_TAG = "${BUILD_NUMBER}"
         DOCKER_REGISTRY = 'docker.io'
+        AZURE_APP_NAME = 'pawtraitid'
+        AZURE_RESOURCE_GROUP = 'pawtraitid_group-802e'
     }
     
     stages {
@@ -91,34 +93,29 @@ pipeline {
                     if (isUnix()) {
                         sh '''
                             docker-compose up -d db
-                            sleep 30
-                            docker run --rm --network pawtrait_pawtrait-network \
-                                -e DB_HOST=db \
-                                -e DB_USER=pawtrait \
-                                -e DB_PASS=pawtrait_secret \
-                                -e DB_NAME=photobooth_db \
-                                ${DOCKER_IMAGE}:${DOCKER_TAG} \
-                                php -r "echo 'PHP Configuration OK';"
+                            sleep 15
+                            # Pakai docker-compose run biar network & env otomatis bener
+                            docker-compose run --rm app php -r "echo 'PHP Configuration OK';"
                             docker-compose down
                         '''
                     } else {
                         bat '''
                             docker-compose up -d db
-                            timeout /t 30 /nobreak
+                            timeout /t 15 /nobreak
+                            docker-compose run --rm app php -r "echo 'PHP Configuration OK';"
                             docker-compose down
                         '''
-                        echo 'Basic test completed on Windows'
                     }
                 }
             }
         }
         
-        stage('Push to Registry') {
+        stage('Push to Docker Hub') {
             when {
-                branch 'main'
+                branch 'Azure'
             }
             steps {
-                echo 'Pushing to Docker Registry...'
+                echo 'Pushing to Docker Hub...'
                 withCredentials([usernamePassword(
                     credentialsId: 'docker-registry-credentials',
                     usernameVariable: 'DOCKER_USER',
@@ -143,46 +140,20 @@ pipeline {
             }
         }
         
-        stage('Deploy to Staging') {
+        stage('Deploy to Azure') {
             when {
-                branch 'develop'
+                branch 'Azure'
             }
             steps {
-                echo 'Deploying to Staging...'
+                echo 'Triggering Azure Web App Update...'
                 script {
+                    // Pakai kredensial Azure CLI kalau sudah ada di Jenkins
+                    // Jika belum, Azure Web App akan otomatis narik jika "Continuous Deployment" di Webhook sudah aktif
+                    echo "Deployment triggered for Azure Web App: ${AZURE_APP_NAME}"
                     if (isUnix()) {
-                        sh '''
-                            docker-compose down || true
-                            docker-compose up -d
-                        '''
+                        sh "az webapp config container set --name ${AZURE_APP_NAME} --resource-group ${AZURE_RESOURCE_GROUP} --docker-custom-image-name ${DOCKER_IMAGE}:latest"
                     } else {
-                        bat '''
-                            docker-compose down
-                            docker-compose up -d
-                        '''
-                    }
-                }
-            }
-        }
-        
-        stage('Deploy to Production') {
-            when {
-                branch 'main'
-            }
-            steps {
-                echo 'Deploying to Production...'
-                input message: 'Deploy to production?', ok: 'Deploy'
-                script {
-                    if (isUnix()) {
-                        sh '''
-                            docker-compose -f docker-compose.yml down || true
-                            docker-compose -f docker-compose.yml up -d
-                        '''
-                    } else {
-                        bat '''
-                            docker-compose -f docker-compose.yml down
-                            docker-compose -f docker-compose.yml up -d
-                        '''
+                        bat "az webapp config container set --name ${AZURE_APP_NAME} --resource-group ${AZURE_RESOURCE_GROUP} --docker-custom-image-name ${DOCKER_IMAGE}:latest"
                     }
                 }
             }
