@@ -86,6 +86,10 @@ curl_setopt($ch, CURLOPT_HTTPHEADER, [
     'Authorization: Basic ' . base64_encode(MIDTRANS_SERVER_KEY . ':')
 ]);
 
+// WAJIB BUAT AZURE: Bypass SSL verification biar mau konek
+curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+
 $response = curl_exec($ch);
 $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 curl_close($ch);

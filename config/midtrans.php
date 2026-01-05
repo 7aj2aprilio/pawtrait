@@ -31,12 +31,24 @@ if (!function_exists('loadEnv')) {
 loadEnv(__DIR__ . '/../.env');
 
 // Midtrans Configuration Constants
-define('MIDTRANS_MERCHANT_ID', getenv('MIDTRANS_MERCHANT_ID'));
-define('MIDTRANS_CLIENT_KEY', getenv('MIDTRANS_CLIENT_KEY'));
-define('MIDTRANS_SERVER_KEY', getenv('MIDTRANS_SERVER_KEY'));
-define('MIDTRANS_IS_PRODUCTION', filter_var(getenv('MIDTRANS_IS_PRODUCTION'), FILTER_VALIDATE_BOOLEAN));
-define('MIDTRANS_IS_SANITIZED', filter_var(getenv('MIDTRANS_IS_SANITIZED'), FILTER_VALIDATE_BOOLEAN));
-define('MIDTRANS_3DS', filter_var(getenv('MIDTRANS_IS_3DS'), FILTER_VALIDATE_BOOLEAN));
+// Helper biar Azure bisa baca variabelnya
+function getAzureEnv($key) {
+    // Coba baca standar
+    $val = getenv($key);
+    // Kalau kosong, coba baca versi Azure (yang ada prefixnya)
+    if ($val === false) {
+        $val = getenv("APPSETTING_$key");
+    }
+    return $val;
+}
+
+// Midtrans Configuration Constants
+define('MIDTRANS_MERCHANT_ID', getAzureEnv('MIDTRANS_MERCHANT_ID'));
+define('MIDTRANS_CLIENT_KEY', getAzureEnv('MIDTRANS_CLIENT_KEY'));
+define('MIDTRANS_SERVER_KEY', getAzureEnv('MIDTRANS_SERVER_KEY'));
+define('MIDTRANS_IS_PRODUCTION', filter_var(getAzureEnv('MIDTRANS_IS_PRODUCTION'), FILTER_VALIDATE_BOOLEAN));
+define('MIDTRANS_IS_SANITIZED', filter_var(getAzureEnv('MIDTRANS_IS_SANITIZED'), FILTER_VALIDATE_BOOLEAN));
+define('MIDTRANS_3DS', filter_var(getAzureEnv('MIDTRANS_IS_3DS'), FILTER_VALIDATE_BOOLEAN));
 
 // Midtrans API URLs (Sandbox vs Production)
 if (MIDTRANS_IS_PRODUCTION) {
